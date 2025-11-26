@@ -1,0 +1,26 @@
+[PAISES]
+Brasil;BRA;
+Estados Unidos;USA;
+
+[ATLETAS]
+Ana Silva;F;1998;BRA;2;
+John Doe;M;1995;USA;1;
+
+[TREINADORES]
+Carlos Souza;M;1975;BRA;
+
+[MODALIDADES]
+ATH100;Atletismo 100m;1;
+SWIM100;Natacao 100m livre;1;
+
+[MEDALHAS]
+ouro;2024;ATH100;Ana Silva;
+prata;2024;SWIM100;John Doe;
+
+[ATLETAS_MODALIDADES]
+Ana Silva;ATH100;
+John Doe;SWIM100;
+
+[TREINADORES_ATLETAS]
+Carlos Souza;Ana Silva;
+Carlos Souza;John Doe;
