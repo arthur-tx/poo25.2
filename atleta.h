@@ -5,13 +5,13 @@
 #include "modalidade.h"
 #include "medalha.h"
 
-
 class Atleta : public Pessoa {
 private:
     int participacoes;
     vector<Medalha*> medalhas;
     
 public:
+   
    Atleta(const string& nome, const string& genero, int anoNascimento, Pais* pais, int participacoes);
     
     int getParticipacoes() const;

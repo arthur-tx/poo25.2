@@ -16,10 +16,19 @@
 #include <memory>
 #include <fstream>
 #include <sstream>
+#include <cctype> // Necessário para toupper
 
 using namespace std;
 
-// implemetançao da classe Pessoa
+// [NOVO] Função auxiliar para padronizar textos em maiúsculo
+string paraMaiusculo(string texto) {
+    transform(texto.begin(), texto.end(), texto.begin(), ::toupper);
+    return texto;
+}
+
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE PESSOA
+// ==========================================
 Pessoa ::Pessoa(const string &nome, const string &genero, int anoNascimento, Pais *pais)
     : nome(nome), genero(genero), anoNascimento(anoNascimento), pais(pais) {}
 string Pessoa ::getNome() const
@@ -64,7 +73,9 @@ void Pessoa ::adicionarModalidade(Modalidade *modalidade)
     modalidades.push_back(modalidade);
 }
 
-// Implementação da classe Modalidade
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE MODALIDADE
+// ==========================================
 Modalidade ::Modalidade(const string &codigo, const string &nome, int evento)
     : codigo(codigo), nome(nome), evento(evento) {}
 
@@ -94,7 +105,9 @@ void Modalidade ::setEvento(int novoEvento)
     evento = novoEvento;
 }
 
-// Implementação da classe Pais
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE PAIS
+// ==========================================
 Pais ::Pais(const string &nome, const string &codigo)
     : nome(nome), codigo(codigo) {}
 string Pais ::getNome() const
@@ -130,9 +143,12 @@ void Pais ::adicionarAtleta(Atleta *atleta)
     atletas.push_back(atleta);
 }
 
-// Implementação da classe Atleta
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE ATLETA
+// ==========================================
 Atleta ::Atleta(const string &nome, const string &genero, int anoNascimento, Pais *pais, int participacoes)
     : Pessoa(nome, genero, anoNascimento, pais), participacoes(participacoes) {}
+
 int Atleta ::getParticipacoes() const
 {
     return participacoes;
@@ -150,7 +166,9 @@ void Atleta ::adicionarMedalha(Medalha *medalha)
     medalhas.push_back(medalha);
 }
 
-// Implementação da classe Medalha
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE MEDALHA
+// ==========================================
 Medalha ::Medalha(const string &tipo, int ano, Modalidade *modalidade, Atleta *atleta)
     : tipo(tipo), ano(ano), modalidade(modalidade), atletaPremiado(atleta) {}
 string Medalha ::getTipo() const
@@ -178,7 +196,9 @@ Atleta *Medalha ::getAtletaPremiado() const
     return atletaPremiado;
 }
 
-// Implementação da classe Treinador
+// ==========================================
+// IMPLEMENTAÇÃO DA CLASSE TREINADOR
+// ==========================================
 Treinador ::Treinador(const string &nome, const string &genero, int anoNascimento, Pais *pais)
     : Pessoa(nome, genero, anoNascimento, pais) {}
 const vector<Atleta *> &Treinador ::getAtletasTreinados() const
@@ -190,55 +210,68 @@ void Treinador ::adicionarAtletaTreinado(Atleta *atleta)
     atletasTreinados.push_back(atleta);
 }
 
-// Implementaçao da classe SistemaOlimpico
+// ==========================================
+// IMPLEMENTAÇÃO DO SISTEMA OLIMPICO
+// ==========================================
 SistemaOlimpico ::SistemaOlimpico() {}
+
 void SistemaOlimpico ::cadastrarPais(const string &nome, const string &codigo)
 {
+    // [ALTERADO] Padroniza código para busca e cadastro
+    string codMaiusculo = paraMaiusculo(codigo);
+
     for (const auto &pais : paises)
     {
-        if (pais->getCodigo() == codigo)
+        if (pais->getCodigo() == codMaiusculo)
         {
-            cout << "País com código " << codigo << " já cadastrado." << endl;
+            cout << "País com código " << codMaiusculo << " já cadastrado." << endl;
             return;
         }
     }
-    paises.push_back(make_unique<Pais>(nome, codigo));
+    paises.push_back(make_unique<Pais>(nome, codMaiusculo));
     cout << "País " << nome << " cadastrado com sucesso." << endl;
 }
 
 void SistemaOlimpico ::cadastrarAtleta(const string &nome, const string &genero, int anoNascimento, const string &codigoPais)
 {
-    Pais *pais = buscarPais(codigoPais);
+    // [ALTERADO] Padroniza genero e codigo pais
+    string codPaisMaiusculo = paraMaiusculo(codigoPais);
+    string genMaiusculo = paraMaiusculo(genero);
+
+    Pais *pais = buscarPais(codPaisMaiusculo);
     if (!pais)
     {
-        cout << "País com código " << codigoPais << " nao encontrado." << endl;
+        cout << "País com código " << codPaisMaiusculo << " nao encontrado." << endl;
         return;
     }
-    // verificar se o atleta já existe
+    // verificar se o atleta já existe (pelo Nome)
     for (const auto &atleta : atletas)
     {
-        if (atleta->getNome() == nome)
+        if (atleta->getNome() == nome) // Nome mantemos original (case sensitive pode ser desejado)
         {
             cout << "Atleta com nome " << nome << " já cadastrado." << endl;
             return;
         }
     }
 
-    auto novoAtleta = make_unique<Atleta>(nome, genero, anoNascimento, pais, 0);
-    atletas.push_back(make_unique<Atleta>(nome, genero, anoNascimento, pais, 0));
-    pais->adicionarAtleta(atletas.back().get());
+    auto novoAtleta = make_unique<Atleta>(nome, genMaiusculo, anoNascimento, pais, 0);
+    pais->adicionarAtleta(novoAtleta.get());
+    atletas.push_back(move(novoAtleta));
     cout << "Atleta " << nome << " cadastrado com sucesso." << endl;
 }
 
 void SistemaOlimpico ::cadastrarTreinador(const string &nome, const string &genero, int anoNascimento, const string &codigoPais)
 {
-    Pais *pais = buscarPais(codigoPais);
+    // [ALTERADO] Padroniza genero e codigo pais
+    string codPaisMaiusculo = paraMaiusculo(codigoPais);
+    string genMaiusculo = paraMaiusculo(genero);
+
+    Pais *pais = buscarPais(codPaisMaiusculo);
     if (!pais)
     {
-        cout << "País com código " << codigoPais << " nao encontrado." << endl;
+        cout << "País com código " << codPaisMaiusculo << " nao encontrado." << endl;
         return;
     }
-    // verificar se o treinador já existe
     for (const auto &treinador : treinadores)
     {
         if (treinador->getNome() == nome)
@@ -247,41 +280,50 @@ void SistemaOlimpico ::cadastrarTreinador(const string &nome, const string &gene
             return;
         }
     }
-    treinadores.push_back(make_unique<Treinador>(nome, genero, anoNascimento, pais));
+    treinadores.push_back(make_unique<Treinador>(nome, genMaiusculo, anoNascimento, pais));
     cout << "Treinador " << nome << " cadastrado com sucesso." << endl;
 }
 
 void SistemaOlimpico ::criarModalidade(const string &codigo, const string &nome, int evento)
 {
+    // [ALTERADO] Padroniza código da modalidade
+    string codMaiusculo = paraMaiusculo(codigo);
+
     for (const auto &mod : modalidade)
     {
-        if (mod->getCodigo() == codigo)
+        if (mod->getCodigo() == codMaiusculo)
         {
-            cout << "Modalidade com código " << codigo << " já existe." << endl;
+            cout << "Modalidade com código " << codMaiusculo << " já existe." << endl;
             return;
         }
     }
-    modalidade.push_back(make_unique<Modalidade>(codigo, nome, evento));
+    modalidade.push_back(make_unique<Modalidade>(codMaiusculo, nome, evento));
     cout << "Modalidade " << nome << " criada com sucesso." << endl;
 }
 
 void SistemaOlimpico ::criarMedalha(const string &tipo, int ano, const string &codigoModalidade)
 {
-    Modalidade *mod = buscarModalidade(codigoModalidade);
+    // [ALTERADO] Padroniza tipo da medalha e codigo da modalidade
+    string tipoMaiusculo = paraMaiusculo(tipo);
+    string codModMaiusculo = paraMaiusculo(codigoModalidade);
+
+    Modalidade *mod = buscarModalidade(codModMaiusculo);
     if (!mod)
     {
-        cout << "Modalidade com código " << codigoModalidade << " nao encontrada." << endl;
+        cout << "Modalidade com código " << codModMaiusculo << " nao encontrada." << endl;
         return;
     }
-    medalhas.push_back(make_unique<Medalha>(tipo, ano, mod, nullptr));
-    cout << "Medalha " << tipo << " criada com sucesso para o ano " << ano << "." << endl;
+    medalhas.push_back(make_unique<Medalha>(tipoMaiusculo, ano, mod, nullptr));
+    cout << "Medalha " << tipoMaiusculo << " criada com sucesso para o ano " << ano << "." << endl;
 }
 
 Pais *SistemaOlimpico ::buscarPais(const string &codigo) const
 {
+    // [ALTERADO] Busca insensível a maiúsculas/minúsculas
+    string codBusca = paraMaiusculo(codigo);
     for (const auto &pais : paises)
     {
-        if (pais->getCodigo() == codigo)
+        if (pais->getCodigo() == codBusca)
         {
             return pais.get();
         }
@@ -291,6 +333,8 @@ Pais *SistemaOlimpico ::buscarPais(const string &codigo) const
 
 Atleta *SistemaOlimpico ::buscarAtleta(const string &nome) const
 {
+    // Nota: Busca por nome geralmente é exata, mas se quiser flexibilizar,
+    // pode usar paraMaiusculo aqui também. Por enquanto, mantive exata.
     for (const auto &atleta : atletas)
     {
         if (atleta->getNome() == nome)
@@ -315,9 +359,11 @@ Treinador *SistemaOlimpico ::buscarTreinador(const string &nome) const
 
 Modalidade *SistemaOlimpico ::buscarModalidade(const string &codigo) const
 {
+    // [ALTERADO] Busca padronizada
+    string codBusca = paraMaiusculo(codigo);
     for (const auto &mod : modalidade)
     {
-        if (mod->getCodigo() == codigo)
+        if (mod->getCodigo() == codBusca)
         {
             return mod.get();
         }
@@ -327,9 +373,11 @@ Modalidade *SistemaOlimpico ::buscarModalidade(const string &codigo) const
 
 Medalha *SistemaOlimpico ::buscarMedalha(const string &tipo, int ano) const
 {
+    // [ALTERADO] Busca padronizada
+    string tipoBusca = paraMaiusculo(tipo);
     for (const auto &med : medalhas)
     {
-        if (med->getTipo() == tipo && med->getAno() == ano)
+        if (med->getTipo() == tipoBusca && med->getAno() == ano)
         {
             return med.get();
         }
@@ -339,8 +387,9 @@ Medalha *SistemaOlimpico ::buscarMedalha(const string &tipo, int ano) const
 
 bool SistemaOlimpico ::associarAtletaPais(const string &nomeAtleta, const string &codigoPais)
 {
+    // [ALTERADO] Codigo pais padronizado na busca
     Atleta *atleta = buscarAtleta(nomeAtleta);
-    Pais *pais = buscarPais(codigoPais);
+    Pais *pais = buscarPais(paraMaiusculo(codigoPais));
     if (!atleta || !pais)
     {
         return false;
@@ -350,15 +399,19 @@ bool SistemaOlimpico ::associarAtletaPais(const string &nomeAtleta, const string
     return true;
 }
 
-bool SistemaOlimpico ::premiarAtletaMedalha(const string cpfAtleta, const string &tipoMedalha, int ano, const string &codigoModalidade)
+bool SistemaOlimpico ::premiarAtletaMedalha(const string &nomeAtleta, const string &tipoMedalha, int ano, const string &codigoModalidade)
 {
-    Atleta *atleta = buscarAtleta(cpfAtleta);
-    Medalha *medalha = buscarMedalha(tipoMedalha, ano);
-    Modalidade *modalidade = buscarModalidade(codigoModalidade);
+    // [ALTERADO] Padronização dos termos de busca
+    string tipoBusca = paraMaiusculo(tipoMedalha);
+    string codModBusca = paraMaiusculo(codigoModalidade);
+
+    Atleta *atleta = buscarAtleta(nomeAtleta); 
+    Medalha *medalha = buscarMedalha(tipoBusca, ano);
+    Modalidade *modalidade = buscarModalidade(codModBusca);
 
     if (!atleta || !medalha || !modalidade)
     {
-        cout << "Atleta, medalha ou modalidade nao encontrada." << endl;
+        cout << "Atleta (" << nomeAtleta << "), medalha ou modalidade nao encontrada." << endl;
         return false;
     }
 
@@ -367,17 +420,20 @@ bool SistemaOlimpico ::premiarAtletaMedalha(const string cpfAtleta, const string
     atleta->adicionarMedalha(medalha);
     atleta->setParticipacoes(atleta->getParticipacoes() + 1);
     atleta->getPais()->adicionarMedalha(medalha);
-    cout << "Atleta " << atleta->getNome() << " premiado com medalha " << tipoMedalha << " no ano " << ano << "." << endl;
+    cout << "Atleta " << atleta->getNome() << " premiado com medalha " << tipoBusca << " no ano " << ano << "." << endl;
 
     return true;
 }
 
 void SistemaOlimpico ::listarAtletasPorModalidade(const string &codigoModalidade) const
 {
-    Modalidade *modalidade = buscarModalidade(codigoModalidade);
+    // [ALTERADO] Padronização
+    string codBusca = paraMaiusculo(codigoModalidade);
+    Modalidade *modalidade = buscarModalidade(codBusca);
+
     if (!modalidade)
     {
-        cout << "Modalidade com código " << codigoModalidade << " nao encontrada." << endl;
+        cout << "Modalidade com código " << codBusca << " nao encontrada." << endl;
         return;
     }
     cout << "Atletas na modalidade " << modalidade->getNome() << ":" << endl;
@@ -386,7 +442,7 @@ void SistemaOlimpico ::listarAtletasPorModalidade(const string &codigoModalidade
         const auto &modalidadesAtleta = atleta->getModalidades();
         for (const auto &modalidadeAtleta : modalidadesAtleta)
         {
-            if (modalidadeAtleta->getCodigo() == codigoModalidade)
+            if (modalidadeAtleta->getCodigo() == codBusca)
             {
                 atleta->imprimirInformacoes();
                 break;
@@ -445,7 +501,7 @@ void SistemaOlimpico::carregarDados()
             string nome, codigo;
             getline(ss, nome, ';');
             getline(ss, codigo, ';');
-            cadastrarPais(nome, codigo);
+            cadastrarPais(nome, codigo); // Já chama paraMaiusculo internamente
         }
         else if (secaoAtual == "[ATLETAS]")
         {
@@ -454,12 +510,17 @@ void SistemaOlimpico::carregarDados()
             getline(ss, genero, ';');
             getline(ss, anoStr, ';');
             getline(ss, codigoPais, ';');
-            getline(ss, participacoesStr, ';');
+            getline(ss, participacoesStr, ';'); 
 
-            Pais *pais = buscarPais(codigoPais);
+            // Como usamos make_unique direto aqui sem passar pelo cadastrarAtleta,
+            // precisamos aplicar paraMaiusculo manualmente aqui também:
+            string codPaisUpper = paraMaiusculo(codigoPais);
+            string genUpper = paraMaiusculo(genero);
+
+            Pais *pais = buscarPais(codPaisUpper);
             if (pais)
             {
-                auto novoAtleta = make_unique<Atleta>(nome, genero, stoi(anoStr), pais, stoi(participacoesStr));
+                auto novoAtleta = make_unique<Atleta>(nome, genUpper, stoi(anoStr), pais, stoi(participacoesStr));
                 pais->adicionarAtleta(novoAtleta.get());
                 atletas.push_back(move(novoAtleta));
             }
@@ -472,10 +533,13 @@ void SistemaOlimpico::carregarDados()
             getline(ss, anoStr, ';');
             getline(ss, codigoPais, ';');
 
-            Pais *pais = buscarPais(codigoPais);
+            string codPaisUpper = paraMaiusculo(codigoPais);
+            string genUpper = paraMaiusculo(genero);
+
+            Pais *pais = buscarPais(codPaisUpper);
             if (pais)
             {
-                treinadores.push_back(make_unique<Treinador>(nome, genero, stoi(anoStr), pais));
+                treinadores.push_back(make_unique<Treinador>(nome, genUpper, stoi(anoStr), pais));
             }
         }
         else if (secaoAtual == "[MODALIDADES]")
@@ -484,8 +548,9 @@ void SistemaOlimpico::carregarDados()
             getline(ss, codigo, ';');
             getline(ss, nome, ';');
             getline(ss, eventoStr, ';');
-
-            modalidade.push_back(make_unique<Modalidade>(codigo, nome, stoi(eventoStr)));
+            
+            // cadastrar manual, aplica uppercase
+            modalidade.push_back(make_unique<Modalidade>(paraMaiusculo(codigo), nome, stoi(eventoStr)));
         }
         else if (secaoAtual == "[MEDALHAS]")
         {
@@ -495,12 +560,15 @@ void SistemaOlimpico::carregarDados()
             getline(ss, codigoModalidade, ';');
             getline(ss, nomeAtleta, ';');
 
-            Modalidade *modalidadePtr = buscarModalidade(codigoModalidade);
-            Atleta *atleta = buscarAtleta(nomeAtleta);
+            string codModUpper = paraMaiusculo(codigoModalidade);
+            string tipoUpper = paraMaiusculo(tipo);
+
+            Modalidade *modalidadePtr = buscarModalidade(codModUpper);
+            Atleta *atleta = buscarAtleta(nomeAtleta); 
 
             if (modalidadePtr)
             {
-                auto novaMedalha = make_unique<Medalha>(tipo, stoi(anoStr), modalidadePtr, atleta);
+                auto novaMedalha = make_unique<Medalha>(tipoUpper, stoi(anoStr), modalidadePtr, atleta);
                 if (atleta)
                 {
                     atleta->adicionarMedalha(novaMedalha.get());
@@ -515,8 +583,8 @@ void SistemaOlimpico::carregarDados()
             getline(ss, nomeAtleta, ';');
             getline(ss, codigoModalidade, ';');
 
-            Atleta *atleta = buscarAtleta(nomeAtleta);
-            Modalidade *modalidadePtr = buscarModalidade(codigoModalidade);
+            Atleta *atleta = buscarAtleta(nomeAtleta); 
+            Modalidade *modalidadePtr = buscarModalidade(paraMaiusculo(codigoModalidade));
 
             if (atleta && modalidadePtr)
             {
@@ -693,6 +761,7 @@ void Pais::imprimirInformacoes() const
          << " | Atletas: " << atletas.size()
          << " | Medalhas: " << medalhas.size() << endl;
 }
+
 void SistemaOlimpico::exibirQuadroMedalhas() const
 {
     struct LinhaQuadro
@@ -719,13 +788,14 @@ void SistemaOlimpico::exibirQuadroMedalhas() const
             if (!m)
                 continue;
 
-            string tipo = m->getTipo();
+            // [ALTERADO] Garante comparação correta
+            string tipo = paraMaiusculo(m->getTipo());
 
-            if (tipo == "ouro" || tipo == "Ouro" || tipo == "OURO")
+            if (tipo == "OURO")
                 ouro++;
-            else if (tipo == "prata" || tipo == "Prata" || tipo == "PRATA")
+            else if (tipo == "PRATA")
                 prata++;
-            else if (tipo == "bronze" || tipo == "Bronze" || tipo == "BRONZE")
+            else if (tipo == "BRONZE")
                 bronze++;
         }
 
@@ -757,6 +827,156 @@ void SistemaOlimpico::exibirQuadroMedalhas() const
              << '\n';
     }
     cout << "============================\n";
+}
+
+// ---------------------------------------------------------
+// IMPLEMENTAÇÃO DO RELATÓRIO DE ESTATÍSTICAS (PONTO EXTRA)
+// ---------------------------------------------------------
+
+void SistemaOlimpico::gerarRelatoriosEstatisticos() const {
+    cout << "\n==========================================" << endl;
+    cout << "      RELATORIO ESTATISTICO OLIMPICO      " << endl;
+    cout << "==========================================" << endl;
+
+    if (atletas.empty() || paises.empty()) {
+        cout << "[AVISO] Dados insuficientes para gerar estatisticas." << endl;
+        cout << "Cadastre paises e atletas primeiro." << endl;
+        return;
+    }
+
+    // 1. ESTATISTICAS DE ATLETAS (Idade Media)
+    double somaIdades = 0;
+    int anoAtual = 2024;
+    for (const auto& atleta : atletas) {
+        somaIdades += (anoAtual - atleta->getAnoNascimento());
+    }
+    double mediaIdade = (atletas.empty()) ? 0 : somaIdades / atletas.size();
+
+    cout << "1. ESTATISTICAS DE ATLETAS:" << endl;
+    cout << "   - Total de Atletas: " << atletas.size() << endl;
+    cout << "   - Idade Media: " << mediaIdade << " anos" << endl;
+
+    // 2. DESEMPENHO POR PAIS (MAIS E MENOS MEDALHAS)
+    Pais* topPais = nullptr;
+    size_t maxMedalhas = 0;
+    Pais* bottomPais = nullptr;
+    size_t minMedalhas = -1; // Valor maximo de size_t
+
+    for (const auto& p : paises) {
+        size_t qtd = p->getMedalhas().size();
+        if (qtd >= maxMedalhas) {
+            maxMedalhas = qtd;
+            topPais = p.get();
+        }
+        if (qtd < minMedalhas) {
+            minMedalhas = qtd;
+            bottomPais = p.get();
+        }
+    }
+
+    cout << "\n2. DESEMPENHO GERAL POR PAIS:" << endl;
+    if (topPais && maxMedalhas > 0) {
+        cout << "   - Pais com MAIS medalhas: " << topPais->getNome() 
+             << " (" << maxMedalhas << " medalhas)" << endl;
+    } else {
+        cout << "   - Nenhum pais possui medalhas ainda." << endl;
+    }
+    if (bottomPais) {
+        cout << "   - Pais com MENOS medalhas: " << bottomPais->getNome() 
+             << " (" << minMedalhas << " medalhas)" << endl;
+    }
+
+    // 3. POPULARIDADE DAS MODALIDADES
+    map<string, int> contagemModalidades;
+    for (const auto& atleta : atletas) {
+        for (const auto& mod : atleta->getModalidades()) {
+            contagemModalidades[mod->getNome()]++;
+        }
+    }
+
+    string nomeTopMod = "Nenhuma";
+    int maxAtletasMod = 0;
+    for (auto const& par : contagemModalidades) {
+        if (par.second > maxAtletasMod) {
+            maxAtletasMod = par.second;
+            nomeTopMod = par.first;
+        }
+    }
+
+    cout << "\n3. POPULARIDADE DAS MODALIDADES:" << endl;
+    if (maxAtletasMod > 0) {
+        cout << "   - Modalidade com mais atletas: " << nomeTopMod 
+             << " (" << maxAtletasMod << " inscritos)" << endl;
+    } else {
+        cout << "   - Nenhuma associacao atleta-modalidade feita." << endl;
+    }
+
+    // 4. DESTAQUES INDIVIDUAIS POR PAIS
+    cout << "\n4. DESTAQUES INDIVIDUAIS POR PAIS:" << endl;
+    for (const auto& paisPtr : paises) {
+        Pais* p = paisPtr.get();
+        Atleta* atletaDestaque = nullptr;
+        size_t maiorNumMedalhas = 0;
+
+        for (const auto& atleta : p->getAtletas()) {
+            size_t numMedalhas = atleta->getMedalhas().size();
+            if (numMedalhas > maiorNumMedalhas) {
+                maiorNumMedalhas = numMedalhas;
+                atletaDestaque = atleta;
+            }
+        }
+
+        cout << "   - " << p->getNome() << ": ";
+        if (atletaDestaque && maiorNumMedalhas > 0) {
+            cout << atletaDestaque->getNome() << " (" << maiorNumMedalhas << " medalhas)" << endl;
+        } else {
+            cout << "(Sem medalhistas)" << endl;
+        }
+    }
+
+    // 5. ESTATISTICAS DE TREINADORES
+    cout << "\n5. ESTATISTICAS DE TREINADORES:" << endl;
+    Treinador* topTreinadorQtd = nullptr;
+    size_t maxQtdAtletas = 0;
+    Treinador* topTreinadorMedalhas = nullptr;
+    size_t maxTotalMedalhasTreinador = 0;
+
+    for (const auto& treinador : treinadores) {
+        size_t qtdAtletas = treinador->getAtletasTreinados().size();
+        if (qtdAtletas >= maxQtdAtletas) {
+            maxQtdAtletas = qtdAtletas;
+            topTreinadorQtd = treinador.get();
+        }
+        size_t somaMedalhas = 0;
+        for (const auto& atleta : treinador->getAtletasTreinados()) {
+            somaMedalhas += atleta->getMedalhas().size();
+        }
+        if (somaMedalhas >= maxTotalMedalhasTreinador) {
+            maxTotalMedalhasTreinador = somaMedalhas;
+            topTreinadorMedalhas = treinador.get();
+        }
+    }
+
+    if (topTreinadorQtd && maxQtdAtletas > 0) {
+        cout << "   - Treinador com mais atletas: " << topTreinadorQtd->getNome()
+             << " (" << maxQtdAtletas << " atletas)" << endl;
+    } else {
+        cout << "   - Treinador com mais atletas: Nenhum registro." << endl;
+    }
+    if (topTreinadorMedalhas && maxTotalMedalhasTreinador > 0) {
+        cout << "   - Treinador com mais medalhas: " << topTreinadorMedalhas->getNome()
+             << " (" << maxTotalMedalhasTreinador << " medalhas somadas)" << endl;
+    } else {
+        cout << "   - Treinador com mais medalhas: Nenhum registro." << endl;
+    }
+
+    // 6. RESUMO GERAL
+    cout << "\n6. RESUMO GERAL DO SISTEMA:" << endl;
+    cout << "   - Paises Cadastrados: " << paises.size() << endl;
+    cout << "   - Modalidades Criadas: " << modalidade.size() << endl;
+    cout << "   - Medalhas Distribuidas: " << medalhas.size() << endl;
+    cout << "   - Treinadores Cadastrados: " << treinadores.size() << endl;
+    cout << "==========================================" << endl;
 }
 
 #endif

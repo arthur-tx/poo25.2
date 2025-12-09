@@ -1,28 +1,57 @@
 [PAISES]
 Brasil;BRA;
 Estados Unidos;USA;
-Brasil;BR;
+Japao;JPN;
+Franca;FRA;
+Alemanha;GER;
 
 [ATLETAS]
-Ana Silva;F;1998;BRA;2;
-John Doe;M;1995;USA;1;
-Joao;M;1990;BR;0;
+Joao Silva;M;1994;BRA;3;
+Maria Santos;F;2004;BRA;1;
+John Smith;M;2000;USA;1;
+Emily Jones;F;1998;USA;2;
+Kenji Tanaka;M;1990;JPN;3;
+Pierre Dubois;M;1995;FRA;2;
+Hans Muller;M;2001;GER;1;
 
 [TREINADORES]
-Carlos Souza;M;1975;BRA;
+Carlos Tecnico;M;1970;BRA;
+Coach Mike;M;1980;USA;
+Sensei Sato;M;1965;JPN;
 
 [MODALIDADES]
 ATH100;Atletismo 100m;1;
-SWIM100;Natacao 100m livre;1;
+SWIM50;Natacao 50m Livre;1;
+JUDO73;Judo 73kg;2;
+VOLLEY;Volei de Quadra;2;
+GYM;Ginastica Artistica;1;
 
 [MEDALHAS]
-ouro;2024;ATH100;Ana Silva;
-prata;2024;SWIM100;John Doe;
+OURO;2024;ATH100;John Smith;
+PRATA;2024;ATH100;Joao Silva;
+BRONZE;2024;ATH100;Pierre Dubois;
+OURO;2024;SWIM50;Emily Jones;
+PRATA;2024;SWIM50;Kenji Tanaka;
+BRONZE;2024;SWIM50;Hans Muller;
+OURO;2024;VOLLEY;Emily Jones;
+OURO;2002;GYM;Joao Silva;
+OURO;2008;VOLLEY;NONE;
 
 [ATLETAS_MODALIDADES]
-Ana Silva;ATH100;
-John Doe;SWIM100;
+Joao Silva;ATH100;
+Maria Santos;ATH100;
+John Smith;ATH100;
+Emily Jones;SWIM50;
+Emily Jones;VOLLEY;
+Kenji Tanaka;SWIM50;
+Kenji Tanaka;JUDO73;
+Pierre Dubois;ATH100;
+Hans Muller;ATH100;
+Hans Muller;SWIM50;
 
 [TREINADORES_ATLETAS]
-Carlos Souza;Ana Silva;
-Carlos Souza;John Doe;
+Carlos Tecnico;Joao Silva;
+Carlos Tecnico;Maria Santos;
+Coach Mike;John Smith;
+Coach Mike;Emily Jones;
+Sensei Sato;Kenji Tanaka;

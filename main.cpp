@@ -6,6 +6,11 @@ int main()
     SistemaOlimpico sistema;
     sistema.carregarDados();
     int opcao = -1;
+
+    if(sistema.buscarAtleta("Joao Silva") == nullptr) 
+        cout<<"Atleta Joao Silva nao encontrado apos carregar dados."<<endl;
+    else 
+        cout<<"Atleta Joao Silva encontrado apos carregar dados."<<endl;
     do
     {
         cout << "\n========= MENU PRINCIPAL =======" << endl;
@@ -18,7 +23,7 @@ int main()
              << "7. Listar atletas de uma modalidade" << endl
              << "8. Gerar relatorios e estatistica" << endl
              << "9. Salvar dados e sair" << endl;
-        cout << "Menu ainda nao implementado. Digite 0 para sair: ";
+        cout << "Digite 0 para sair: ";
         cin >> opcao;
 
 
@@ -26,11 +31,12 @@ int main()
         {
         case 1:
         {
-            cout << "Cadastrar pais" << endl;
+            cout << "[Cadastrar pais]" << endl;
             string nome;
             string codigo;
-            cout << "Digite o nome e o codigo do pais: ";
+            cout << "Digite o nome do pais: ";
             cin >> nome;
+            cout << "Digite o codigo do pais: ";
             cin >> codigo;
             sistema.cadastrarPais(nome, codigo);
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -40,61 +46,82 @@ int main()
         {
             string nome, genero, codPais;
             int anoNascimento;
-            cout << " Cadastrar atleta" << endl;
-            cout << "Digite o nome do Atleta" << endl;
-            cin >> nome;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            cout << "Digite o genero do Atleta" << endl;
+
+            cout << "--- Cadastrar Atleta ---" << endl;
+            
+            // CORREÇÃO: Limpar o buffer antes de ler a linha inteira
+            cout << "Digite o nome do Atleta: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa o 'enter' anterior
+            getline(cin, nome); // Lê "Joao Silva" inteiro
+
+            cout << "Digite o genero do Atleta: ";
             cin >> genero;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            cout << "Digite o ano de nascimento do Atleta" << endl;
+
+            cout << "Digite o ano de nascimento do Atleta: ";
             cin >> anoNascimento;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            cout << "Digite o codigo do pais do Atleta" << endl;
+
+            cout << "Digite o codigo do pais do Atleta: ";
             cin >> codPais;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
             sistema.cadastrarAtleta(nome, genero, anoNascimento, codPais);
             break;
         }
         case 3:
         {
-            cout << "Criar modalidade" << endl;
+            cout << "[Criar modalidade]" << endl;
             int evento;
             string nome, codigo;
             cout << " Digite o codigo da modalidade: " << endl;
             cin >> codigo;
+             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cout << " Digite o nome da modalidade: " << endl;
             cin >> nome;
+             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cout << " Digite o evento da modalidade: " << endl;
             cin >> evento;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
             sistema.criarModalidade(codigo, nome, evento);
             break;
         }
         case 4:
         {
-            cout << "Criar medalha" << endl;
+            cout << "[Criar medalha]" << endl;
             string tipo, codModalidade;
             int ano;
             cout << " Digite o tipo da medalha: (ouro, prata ou bronze)" << endl;
             cin >> tipo;
-            cout << " Digite o ano em que a medalha foi dada: " << endl;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << " Digite o ano em que a medalha foi dada: "<< endl;
+             //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cin >> ano;
+            // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cout << " Digite o codigo da modalidade que foi concida a medalha: " << endl;
             cin >> codModalidade;
+             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             sistema.criarMedalha(tipo, ano, codModalidade);
             break;
         }
         case 5:
         {
-            cout << " Premiar Atleta com medalha" << endl;
-            string cpf, tipo, codModalidade;
+            cout << "--- Premiar Atleta com medalha ---" << endl;
+            string nomeAtleta, tipo, codModalidade;
             int ano;
-            cout << "Digite o CPF do atleta, o tipo de medalha, o ano em questao e o codigo da modalidade" << endl;
-            cin >> cpf;
+
+            // CORREÇÃO: Ler nome composto
+            cout << "Digite o NOME do atleta: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer
+            getline(cin, nomeAtleta); // Lê "Joao Silva"
+
+            cout << "Digite o tipo de medalha (ouro, prata, bronze): ";
             cin >> tipo;
+            
+            cout << "Digite o ano: ";
             cin >> ano;
+            
+            cout << "Digite o codigo da modalidade: ";
             cin >> codModalidade;
-            sistema.premiarAtletaMedalha(cpf, tipo, ano, codModalidade);
+
+            sistema.premiarAtletaMedalha(nomeAtleta, tipo, ano, codModalidade);
             break;
         }
         case 6:
@@ -105,17 +132,25 @@ int main()
         case 7:
         {
             string cod;
-            cout << "Listar atletas de uma modalidade" << endl
+            cout << "[Listar atletas de uma modalidade]" << endl
                  << "Digite o codigo da modalidade" << endl;
             cin >> cod;
+             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             sistema.listarAtletasPorModalidade(cod);
             break;
         }
         case 8:
         {
-            cout << "Gerar relatorios e estatistica (ainda nao implementado)" << endl;
+            // PONTO EXTRA: Chamada da função de estatísticas
+            sistema.gerarRelatoriosEstatisticos();
+            
+            // Pausa para o usuário ler antes de voltar ao menu
+            cout << "\nPressione ENTER para voltar ao menu...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer
+            cin.get(); // Espera um enter
             break;
         }
+
         case 9:
         {
             sistema.salvarDados();

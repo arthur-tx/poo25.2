@@ -31,7 +31,7 @@ public:
     Medalha *buscarMedalha(const string &tipo, int ano) const;
 
     bool associarAtletaPais(const string &nomeAtleta, const string &codigoPais);
-    bool premiarAtletaMedalha(const string cpfAtleta, const string &tipoMedalha, int ano, const string &codigoModalidade);
+    bool premiarAtletaMedalha(const string &nomeAtleta, const string &tipoMedalha, int ano, const string &codigoModalidade);
 
     void listarAtletasPorModalidade(const string &codigoModalidade) const;
 
@@ -41,7 +41,7 @@ public:
     void listarPaises() const;
     void listarModalidades() const;
     void exibirQuadroMedalhas() const;
-    
+    void gerarRelatoriosEstatisticos() const ;
 };
 
 #endif

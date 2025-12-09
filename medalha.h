@@ -24,6 +24,7 @@ public:
     void setAno(int novoAno);
 
     void imprimirInformacoes() const;
+
 };
 
 #endif
