@@ -675,6 +675,10 @@ void Medalha::imprimirInformacoes() const
          << " | Atleta: " << (atletaPremiado ? atletaPremiado->getNome() : "Nenhum") << endl;
 }
 
+void Medalha::setAtletaPremiado(Atleta *atleta) {
+    atletaPremiado = atleta;
+}
+
 // Para Modalidade
 void Modalidade::imprimirInformacoes() const
 {

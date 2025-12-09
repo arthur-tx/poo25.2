@@ -8,7 +8,7 @@ int main()
     int opcao = -1;
     do
     {
-        cout << "========= MENU PRINCIPAL =======" << endl;
+        cout << "\n========= MENU PRINCIPAL =======" << endl;
         cout << "1. Cadastrar pais" << endl
              << "2. Cadastrar atleta" << endl
              << "3. Criar modalidade" << endl
@@ -20,6 +20,8 @@ int main()
              << "9. Salvar dados e sair" << endl;
         cout << "Menu ainda nao implementado. Digite 0 para sair: ";
         cin >> opcao;
+
+
         switch (opcao)
         {
         case 1:
@@ -56,7 +58,6 @@ int main()
         }
         case 3:
         {
-            // void SistemaOlimpico ::criarModalidade(const string &codigo, const string &nome, int evento)
             cout << "Criar modalidade" << endl;
             int evento;
             string nome, codigo;
@@ -71,7 +72,6 @@ int main()
         }
         case 4:
         {
-            // void SistemaOlimpico ::criarMedalha(const string &tipo, int ano, const string &codigoModalidade)
             cout << "Criar medalha" << endl;
             string tipo, codModalidade;
             int ano;
@@ -86,7 +86,6 @@ int main()
         }
         case 5:
         {
-            // premiarAtletaMedalha(const string cpfAtleta, const string &tipoMedalha, int ano, const string &codigoModalidade)
             cout << " Premiar Atleta com medalha" << endl;
             string cpf, tipo, codModalidade;
             int ano;
@@ -105,7 +104,6 @@ int main()
         }
         case 7:
         {
-            // void listarAtletasPorModalidade(const string &codigoModalidade) const;
             string cod;
             cout << "Listar atletas de uma modalidade" << endl
                  << "Digite o codigo da modalidade" << endl;
@@ -113,13 +111,27 @@ int main()
             sistema.listarAtletasPorModalidade(cod);
             break;
         }
+        case 8:
+        {
+            cout << "Gerar relatorios e estatistica (ainda nao implementado)" << endl;
+            break;
+        }
         case 9:
         {
             sistema.salvarDados();
             break;
         }
+        case 0:
+        {
+            cout << "Saindo do programa..." << endl;
+            break;
+        }
+        default:
+        {
+            cout << "Opcao invalida! Digite um numero entre 0 e 9. Tente novamente." << endl;
+        }
         }
 
-    } while (opcao != 0);
+    } while (opcao != 0 && opcao != 9);
     return 0;
 }

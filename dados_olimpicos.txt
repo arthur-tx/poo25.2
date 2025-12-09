@@ -1,10 +1,12 @@
 [PAISES]
 Brasil;BRA;
 Estados Unidos;USA;
+Brasil;BR;
 
 [ATLETAS]
 Ana Silva;F;1998;BRA;2;
 John Doe;M;1995;USA;1;
+Joao;M;1990;BR;0;
 
 [TREINADORES]
 Carlos Souza;M;1975;BRA;
