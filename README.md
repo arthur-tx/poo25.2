@@ -1,4 +1,4 @@
-`# Sistema de Gerenciamento Olímpico 🥇
+# Sistema de Gerenciamento Olímpico 🥇
 
 Este é um sistema desenvolvido em C++ para o gerenciamento de dados de uma olimpíada. O software permite o cadastro e controle de países, atletas, treinadores, modalidades e medalhas, além de oferecer funcionalidades de relatórios e persistência de dados.
 
