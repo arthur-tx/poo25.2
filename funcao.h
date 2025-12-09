@@ -229,7 +229,7 @@ void SistemaOlimpico ::cadastrarPais(const string &nome, const string &codigo)
         }
     }
     paises.push_back(make_unique<Pais>(nome, codMaiusculo));
-    cout << "País " << nome << " cadastrado com sucesso." << endl;
+    //cout << "País " << nome << " cadastrado com sucesso." << endl;
 }
 
 void SistemaOlimpico ::cadastrarAtleta(const string &nome, const string &genero, int anoNascimento, const string &codigoPais)

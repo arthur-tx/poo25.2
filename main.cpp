@@ -7,10 +7,12 @@ int main()
     sistema.carregarDados();
     int opcao = -1;
 
-    if(sistema.buscarAtleta("Joao Silva") == nullptr) 
-        cout<<"Atleta Joao Silva nao encontrado apos carregar dados."<<endl;
+    // Teste inicial apenas para feedback visual
+ /* if(sistema.buscarAtleta("Joao Silva") == nullptr) 
+        cout << "Atleta Joao Silva nao encontrado apos carregar dados (Teste inicial)." << endl;
     else 
-        cout<<"Atleta Joao Silva encontrado apos carregar dados."<<endl;
+        cout << "Atleta Joao Silva encontrado apos carregar dados." << endl;
+*/
     do
     {
         cout << "\n========= MENU PRINCIPAL =======" << endl;
@@ -22,10 +24,18 @@ int main()
              << "6. Exibir quadro de medalhas" << endl
              << "7. Listar atletas de uma modalidade" << endl
              << "8. Gerar relatorios e estatistica" << endl
-             << "9. Salvar dados e sair" << endl;
+             << "9. Salvar dados Parcial" << endl
+             <<"10. Salvar e sair" << endl;
         cout << "Digite 0 para sair: ";
-        cin >> opcao;
-
+        
+        // Tratamento de entrada para o menu (evita loop infinito se digitar letra)
+        if (!(cin >> opcao)) {
+            cout << "Entrada invalida! Digite um numero." << endl;
+            cin.clear(); 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            opcao = -1;
+            continue;
+        }
 
         switch (opcao)
         {
@@ -34,12 +44,16 @@ int main()
             cout << "[Cadastrar pais]" << endl;
             string nome;
             string codigo;
+            
             cout << "Digite o nome do pais: ";
-            cin >> nome;
-            cout << "Digite o codigo do pais: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer antes do getline
+            getline(cin, nome);
+            
+            cout << "Digite o codigo do pais (ex: BRA): ";
             cin >> codigo;
+            codigo = paraMaiusculo(codigo); // [NOVO] Padroniza
+
             sistema.cadastrarPais(nome, codigo);
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             break;
         }
         case 2:
@@ -49,19 +63,20 @@ int main()
 
             cout << "--- Cadastrar Atleta ---" << endl;
             
-            // CORREÇÃO: Limpar o buffer antes de ler a linha inteira
             cout << "Digite o nome do Atleta: ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa o 'enter' anterior
-            getline(cin, nome); // Lê "Joao Silva" inteiro
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer
+            getline(cin, nome); 
 
-            cout << "Digite o genero do Atleta: ";
+            cout << "Digite o genero do Atleta (M/F): ";
             cin >> genero;
+            genero = paraMaiusculo(genero); // [NOVO] Padroniza
 
             cout << "Digite o ano de nascimento do Atleta: ";
             cin >> anoNascimento;
 
             cout << "Digite o codigo do pais do Atleta: ";
             cin >> codPais;
+            codPais = paraMaiusculo(codPais); // [NOVO] Padroniza
 
             sistema.cadastrarAtleta(nome, genero, anoNascimento, codPais);
             break;
@@ -71,15 +86,19 @@ int main()
             cout << "[Criar modalidade]" << endl;
             int evento;
             string nome, codigo;
+            
             cout << " Digite o codigo da modalidade: " << endl;
             cin >> codigo;
-             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            codigo = paraMaiusculo(codigo); // [NOVO] Padroniza
+            
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpa buffer
+            
             cout << " Digite o nome da modalidade: " << endl;
-            cin >> nome;
-             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            getline(cin, nome); // Usa getline para nomes compostos (ex: Volei de Praia)
+            
             cout << " Digite o evento da modalidade: " << endl;
             cin >> evento;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+            
             sistema.criarModalidade(codigo, nome, evento);
             break;
         }
@@ -88,16 +107,18 @@ int main()
             cout << "[Criar medalha]" << endl;
             string tipo, codModalidade;
             int ano;
-            cout << " Digite o tipo da medalha: (ouro, prata ou bronze)" << endl;
+            
+            cout << " Digite o tipo da medalha (Ouro, Prata ou Bronze): " << endl;
             cin >> tipo;
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            tipo = paraMaiusculo(tipo); // [NOVO] Padroniza
+            
             cout << " Digite o ano em que a medalha foi dada: "<< endl;
-             //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cin >> ano;
-            // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            cout << " Digite o codigo da modalidade que foi concida a medalha: " << endl;
+            
+            cout << " Digite o codigo da modalidade: " << endl;
             cin >> codModalidade;
-             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            codModalidade = paraMaiusculo(codModalidade); // [NOVO] Padroniza
+            
             sistema.criarMedalha(tipo, ano, codModalidade);
             break;
         }
@@ -107,19 +128,21 @@ int main()
             string nomeAtleta, tipo, codModalidade;
             int ano;
 
-            // CORREÇÃO: Ler nome composto
             cout << "Digite o NOME do atleta: ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer
-            getline(cin, nomeAtleta); // Lê "Joao Silva"
+            getline(cin, nomeAtleta); 
+           // nomeAtleta = paraMaiusculo(nomeAtleta); // [NOVO] Padroniza
 
             cout << "Digite o tipo de medalha (ouro, prata, bronze): ";
             cin >> tipo;
+            tipo = paraMaiusculo(tipo); // [NOVO] Padroniza
             
             cout << "Digite o ano: ";
             cin >> ano;
             
             cout << "Digite o codigo da modalidade: ";
             cin >> codModalidade;
+            codModalidade = paraMaiusculo(codModalidade); // [NOVO] Padroniza
 
             sistema.premiarAtletaMedalha(nomeAtleta, tipo, ano, codModalidade);
             break;
@@ -133,27 +156,34 @@ int main()
         {
             string cod;
             cout << "[Listar atletas de uma modalidade]" << endl
-                 << "Digite o codigo da modalidade" << endl;
+                 << "Digite o codigo da modalidade: " << endl;
             cin >> cod;
-             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cod = paraMaiusculo(cod); // [NOVO] Padroniza busca
+            
             sistema.listarAtletasPorModalidade(cod);
             break;
         }
         case 8:
         {
-            // PONTO EXTRA: Chamada da função de estatísticas
+            // PONTO EXTRA
             sistema.gerarRelatoriosEstatisticos();
             
-            // Pausa para o usuário ler antes de voltar ao menu
             cout << "\nPressione ENTER para voltar ao menu...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer
-            cin.get(); // Espera um enter
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            cin.get(); 
             break;
         }
 
         case 9:
         {
             sistema.salvarDados();
+            break;
+        }
+        case 10:
+        {
+            sistema.salvarDados();
+            cout << "Saindo do programa..." << endl;
+            opcao = 0; // Força saída do loop
             break;
         }
         case 0:
@@ -163,10 +193,10 @@ int main()
         }
         default:
         {
-            cout << "Opcao invalida! Digite um numero entre 0 e 9. Tente novamente." << endl;
+            cout << "Opcao invalida! Digite um numero entre 0 e 9." << endl;
         }
         }
 
-    } while (opcao != 0 && opcao != 9);
+    } while (opcao != 0 );
     return 0;
 }
